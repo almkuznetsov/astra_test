@@ -1,0 +1,40 @@
+name: cppcheck
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: build code
+        run: |
+          make
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: c_executable
+          path: build
+
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Cppcheck
+        run: sudo apt-get install cppcheck
+
+      - name: Run Cppcheck
+        run: cppcheck --enable=all .
+        id: cppcheck
+
+      - name: Upload Cppcheck results
+        uses: actions/upload-artifact@v3
+        with:
+          name: cppcheck-results
+          path: cppcheck-results.xml
